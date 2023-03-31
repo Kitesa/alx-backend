@@ -1,14 +1,23 @@
 function createPushNotificationsJobs(jobs, queue) {
-  if (!Array.isArray(jobs)) throw new Error('Jobs is not an array');
-  jobs.forEach((job) => {
-    const newJob = queue.create('push_notification_code_3', job);
-    newJob.on('complete', () => console.log(`Notification job ${newJob.id} completed`))
-      .on('failed', (err) => console.log(`Notification job ${newJob.id} failed: ${err}`))
-      .on('progress', (progress) => console.log(`Notification job ${newJob.id} ${progress}% complete`));
-    newJob.save((error) => {
-      if (!error) console.log(`Notification job created: ${newJob.id}`);
-    });
-  });
+  if (!(jobs instanceof Array)) {
+    throw new Error('Jobs is not an array');
+  }
+  for (let job of jobs) {
+    job = queue.create('push_notification_code_3', job);
+    job
+      .on('complete', (result) => { /* eslint-disable-line no-unused-vars */
+        console.log(`Notification job ${job.id} completed`);
+      })
+      .on('failed', (err) => { /* eslint-disable-line no-unused-vars */
+        console.log(`Notification job ${job.id} failed: ${err.message || err.toString()}`);
+      })
+      .on('progress', (progress, data) => { /* eslint-disable-line no-unused-vars */
+        console.log(`Notification job ${job.id} ${progress}% complete`);
+      })
+      .save((err) => { /* eslint-disable-line no-unused-vars */
+        console.log(`Notification job created: ${job.id}`);
+      });
+  }
 }
 
 module.exports = createPushNotificationsJobs;
