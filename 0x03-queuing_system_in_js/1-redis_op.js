@@ -1,22 +1,22 @@
-import { createClient } from 'redis';
-import redis from 'redis';
+import { createClient, print } from 'redis';
 
 const client = createClient();
 
-client.on('connect', () => console.log('Redis client connected to the server'));
+client.on('error', (err) => {
+  console.log('Redis client not connected to the server:', err.toString());
+});
 
-client.on('error', (error) => console.log(`Redis client not connected to the server: ${error.message}`));
+client.on('connect', () => {
+  console.log('Redis client connected to the server');
+});
 
 function setNewSchool(schoolName, value) {
-  client.set(schoolName, value, redis.print);
+  client.SET(schoolName, value, print);
 }
 
 function displaySchoolValue(schoolName) {
-  client.get(schoolName, (err, result) => {
-    if (err) {
-      console.log(err);
-    }
-    console.log(result);
+  client.GET(schoolName, (err, value) => {
+    console.log(value);
   });
 }
 
